@@ -73,7 +73,6 @@ fragments = []
 
 for i in range(0, len(template)):
     start = randint(0,len(template))
-    fragments.append(readsequence(template, antinucleotides, nucleotides,
-                               errors, start, randint(start,len(template))))
+    fragments.append(readsequence(template, antinucleotides, nucleotides, errors, start, randint(start,len(template))))
 
 print(fragments[0])
