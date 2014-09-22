@@ -63,8 +63,7 @@ while e != 'y' or 'n':
         errors = False
         break
 
-pyroMaterials = ['primer','DNApolymerase', 'ATPsulfurylase','luciferase','apyrase','APS',
-                 'luciferin']
+pyroMaterials = ['primer','DNApolymerase','ATPsulfurylase','luciferase','apyrase','APS','luciferin']
 nucleotides = ['A','T','C','G']
 antinucleotides = ['T','A','G','C']
 
@@ -76,4 +75,5 @@ for i in range(0, len(template)):
     start = randint(0,len(template))
     fragments.append(readsequence(template, antinucleotides, nucleotides,
                                errors, start, randint(start,len(template))))
-    print(fragments[i])
+
+print(fragments[0])
