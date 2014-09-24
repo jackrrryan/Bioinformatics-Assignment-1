@@ -6,7 +6,7 @@ Created on Sep 19, 2014
 
 from random import randint
 
-def readsequence(template, antinucleotides, nucleotides, errors, start, finish):
+def pyrosequencing(template, antinucleotides, nucleotides, errors, start, finish):
     
     antisense = ''
 
@@ -47,7 +47,7 @@ print(preamble)
 
 template = template[73:]
 
-print("Welcome to the Genome Sequencer 5000!\nThis sequencer uses Pyrosequencing.")
+print("Welcome to the Genome Sequencer 5000!")
 
 e = ''
 errors = False
@@ -73,6 +73,6 @@ fragments = []
 
 for i in range(0, len(template)):
     start = randint(0,len(template))
-    fragments.append(readsequence(template, antinucleotides, nucleotides,
+    fragments.append(pyrosequencing(template, antinucleotides, nucleotides,
                                errors, start, randint(start,len(template))))
     print(fragments[i])
