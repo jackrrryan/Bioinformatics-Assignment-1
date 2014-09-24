@@ -6,59 +6,104 @@ Created on Sep 19, 2014
 
 from random import randint
 
+file = open('Assnt1_sampleinput.fna.txt', 'r')  #opening the FASTA file
+template = file.read()  #reading the FASTA file to a string
+
 #some variables used in all calculations
 nucleotides = ['A','T','C','G']
 antinucleotides = ['T','A','G','C']
 preamble = template[0:72]   #This is all the text before the start of the sequence
 template = template[73:]    #This is the actual sequence
 
-def pyrosequencing(template, antinucleotides, nucleotides, errors, start, finish):
-    
-    antisense = ''
+print("Welcome to the Genome Sequencer 5000!")
 
-    for i in range (start, finish):
-        templateN = template[i:i+1]
-        randomerror = randint(0,1000)   #from reference. Error rate determined to be 99.9%
-        if errors == True:
-            randomerror = 1000
-        if templateN == 'A':
-            if randomerror < 1:     #1/1000 = 0.1%
-                antisense = antisense + antinucleotides[randint(0,3)]
-            else:
+sequenceType = askType()
+
+errors = askErrors(sequenceType)
+
+coverage = askCoverage(sequenceType)
+
+print('Sequencing has begun!')
+
+def readSizePosition(sequenceType):
+    if sequenceType == 1:
+        start = randint(0,9300) #read must end before last bp in sequence
+        finish = start+700  #700bp is length of pyrosequencing reads
+    elif sequenceType == 2:
+        readLength = randint(50,300)    #Illumina can have reads between 50-300 bp
+        start = randint(0,(10000-readLength))
+        finish = start+readLength
+    else:
+        readLength = randint(400,900)   #Sanger can have reads between 400-900 bp
+        start = randint(0,(10000-readLength))
+        finish = start+readLength
+    return (start,finish)
+
+
+def sequence(sequenceType, template, preamble, antinucleotides, nucleotides):
+    
+    reads = open('reads.txt', w)
+    reads.write(preamble + '\n\nBegin sequencing:\n\n')
+
+    for i in range(0,100):  # doing 100 reads of the sequence
+        antisense = ''
+        sfpositions = readSizePosition(sequenceType)
+        start = sfpositions[0]    # this is the start position of this specific read
+        finish = sfpositions[1]   # this is the end position of this specific read
+        for j in range(start,finish):
+            templateN = template[j]
+            if templateN == 'A':
                 antisense = antisense + antinucleotides[0]
-        elif templateN == 'T':
-            if randomerror < 1:
-                antisense = antisense + nucleotides[randint(0,3)]
-            else:
+            elif templateN == 'T':
                 antisense = antisense + antinucleotides[1]
-        elif templateN == 'C':
-            if randomerror < 1:
-                antisense = antisense + nucleotides[randint(0,3)]
-            else:
+            elif templateN == 'C':
                 antisense = antisense + antinucleotides[2]
-        else:
-            if randomerror < 1:
-                antisense = antisense + nucleotides[randint(0,3)]
             else:
                 antisense = antisense + antinucleotides[3]
-    
-    return antisense
+        reads.write('Read' + i + '[' + start + ':' + finish + ']\n' + antisense + '\n\n')
 
-def askErrors():
+def randsequence(sequenceType, template, preamble, antinucleotides, nucleotides, errors):
+
+    reads = open('reads.txt', w)
+    reads.write(preamble + '\n\nBegin sequencing:\n\n')
+
+    for i in range(0,100):  # doing 100 reads of the sequence
+        antisense = ''
+        sfpositions = readSizePosition(sequenceType)
+        start = sfpositions[0]    # this is the start position of this specific read
+        finish = sfpositions[1]   # this is the end position of this specific read
+        for j in range(start,finish):
+            templateN = template[j]
+            if templateN == 'A':
+                antisense = antisense + antinucleotides[0]
+            elif templateN == 'T':
+                antisense = antisense + antinucleotides[1]
+            elif templateN == 'C':
+                antisense = antisense + antinucleotides[2]
+            else:
+                antisense = antisense + antinucleotides[3]
+        reads.write('Read' + i + '[' + start + ':' + finish + ']\n' + antisense + '\n\n')
+
+
+def askErrors(sequenceType):
     e = ''
-    errors = False
     #loop until user gives a proper 'y' or 'n' answer
     while e != 'y' or 'n':
         e = input('\nTurn on random sequencing errors? Y or N:').lower()
         if e == 'y':
             errors = True
-            break
+            if sequenceType == 1:
+                return 1
+            elif sequenceType == 2:
+                return 2
+            else
+                return 3
         if e == 'n':
             errors = False
-            break
+            return 0
 
 def askType():
-    ans = ''
+    ans = 0
     while ans != 1 or 2 or 3:
         ans = input("Which sequencing method would you like to use?\n"
                     "Input 1 for Pyrosequencing, 2 for Illumina, and 3 for Sanger:")
@@ -70,19 +115,31 @@ def askType():
             return 3
 
 def askCoverage(sequenceType):
-    while !coverage.isInstance(coverage, double)
-        coverage = input("What is the approximate coverage of your sequence protocol (in percentage)?:")
+    '''
+    Coverage (C = nL/G) cannot be below the value generated by one read of minimum length for each method:
+    0.07 for Pyrosequencing (minimum read length 700, (1)(700)/10000),
+    0.0001 for Illumina (Mimimum read length 50, (1)(50)/10000),
+    0.04 for Sanger (Minimum read length 400, (1)(400)/10000)
+    '''
+    coverage = input("What is the coverage of your sequence protocol?"
+                    "Coverage (C = nL/G) cannot be below the value generated by one read of minimum length for each method:"
+                    "0.07 for Pyrosequencing (minimum read length 700, (1)(700)/10000),"
+                    "0.0001 for Illumina (Mimimum read length 50, (1)(50)/10000),"
+                    "0.04 for Sanger (Minimum read length 400, (1)(400)/10000)")
+    if sequenceType == 1:
+        if coverage < 0.07:
+            coverage = coverageErrorLoop(0.07)
+    elif sequenceType == 2:
+        if coverage < 0.0001:
+            coverage = coverageErrorLoop(0.0001)
+    else:
+        if coverage < 0.04:
+            coverage = coverageErrorLoop(0.04)
+    return coverage
 
-
-file = open('Assnt1_sampleinput.fna.txt', 'r')  #opening the FASTA file
-template = file.read()  #reading the FASTA file to a string
-
-print("Welcome to the Genome Sequencer 5000!")
-
-errors = askErrors()
-
-sequenceType = askType()
-
-coverage = askCoverage(sequenceType)
-
-print('Sequencing has begun!')
+def coverageErrorLoop(min):
+    coverage = 0
+    while coverage < min:
+        coverage = input("Value entered is less than minimum coverage for this sequencing type."
+                        "Enter another value:")
+    return coverage
