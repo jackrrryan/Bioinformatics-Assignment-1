@@ -1,10 +1,13 @@
 '''
 Created on Sep 19, 2014
 
-@author: Jack
+@author: Jack Ryan B00321033
 '''
 
 from random import randint
+
+nucleotides = ['A','T','C','G']
+antinucleotides = ['T','A','G','C']
 
 def pyrosequencing(template, antinucleotides, nucleotides, errors, start, finish):
     
@@ -38,41 +41,43 @@ def pyrosequencing(template, antinucleotides, nucleotides, errors, start, finish
     
     return antisense
 
-file = open('Assnt1_sampleinput.fna.txt', 'r')
+def askErrors():
+    e = ''
+    errors = False
+    #loop until user gives a proper 'y' or 'n' answer
+    while e != 'y' or 'n':
+        e = input('\nTurn on random sequencing errors? Y or N:').lower()
+        if e == 'y':
+            errors = True
+            break
+        if e == 'n':
+            errors = False
+            break
 
-template = file.read()
+def askType():
+    ans = ''
+    while ans != 1 or 2 or 3:
+        ans = input("Which sequencing method would you like to use?\n"
+                    "Input 1 for Pyrosequencing, 2 for Illumina, and 3 for Sanger:")
+        if ans == 1:
+            return 1
+        elif ans == 2:
+            return 2
+        elif ans == 3:
+            return 3
+        else:
+            print("Unknown input. Try again:")
 
-preamble = template[0:72]
-print(preamble)
+file = open('Assnt1_sampleinput.fna.txt', 'r')  #opening the FASTA file
+template = file.read()  #reading the FASTA file to a string
 
-template = template[73:]
+preamble = template[0:72]   #This is all the text before the start of the sequence
+template = template[73:]    #This is the actual sequence
 
 print("Welcome to the Genome Sequencer 5000!")
 
-e = ''
-errors = False
+errors = askErrors()
 
-#loop until user gives a proper 'y' or 'n' answer
-while e != 'y' or 'n':
-    e = input('\nTurn on random sequencing errors? Y or N:').lower()
-    if e == 'y':
-        errors = True
-        break
-    if e == 'n':
-        errors = False
-        break
-
-pyroMaterials = ['primer','DNApolymerase', 'ATPsulfurylase','luciferase','apyrase','APS',
-                 'luciferin']
-nucleotides = ['A','T','C','G']
-antinucleotides = ['T','A','G','C']
+sequenceType = askType()
 
 print('Sequencing has begun!')
-
-fragments = []
-
-for i in range(0, len(template)):
-    start = randint(0,len(template))
-    fragments.append(pyrosequencing(template, antinucleotides, nucleotides,
-                               errors, start, randint(start,len(template))))
-    print(fragments[i])
