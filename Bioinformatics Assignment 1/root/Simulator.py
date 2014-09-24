@@ -6,8 +6,11 @@ Created on Sep 19, 2014
 
 from random import randint
 
+#some variables used in all calculations
 nucleotides = ['A','T','C','G']
 antinucleotides = ['T','A','G','C']
+preamble = template[0:72]   #This is all the text before the start of the sequence
+template = template[73:]    #This is the actual sequence
 
 def pyrosequencing(template, antinucleotides, nucleotides, errors, start, finish):
     
@@ -65,19 +68,21 @@ def askType():
             return 2
         elif ans == 3:
             return 3
-        else:
-            print("Unknown input. Try again:")
+
+def askCoverage(sequenceType):
+    while !coverage.isInstance(coverage, double)
+        coverage = input("What is the approximate coverage of your sequence protocol (in percentage)?:")
+
 
 file = open('Assnt1_sampleinput.fna.txt', 'r')  #opening the FASTA file
 template = file.read()  #reading the FASTA file to a string
-
-preamble = template[0:72]   #This is all the text before the start of the sequence
-template = template[73:]    #This is the actual sequence
 
 print("Welcome to the Genome Sequencer 5000!")
 
 errors = askErrors()
 
 sequenceType = askType()
+
+coverage = askCoverage(sequenceType)
 
 print('Sequencing has begun!')
