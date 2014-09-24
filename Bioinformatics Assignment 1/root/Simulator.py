@@ -82,15 +82,23 @@ def randsequence(sequenceType, readNum, template, preamble, antinucleotides, nuc
             templateN = template[j]
             if templateN == 'A':
                 if randint(0,1000) <= errorpercent:
+                    antisense = antisense + antinucleotides[randint(0,3)]
+                else:
                     antisense = antisense + antinucleotides[0]
             elif templateN == 'T':
                 if randint(0,1000) <= errorpercent:
+                    antisense = antisense + antinucleotides[randint(0,3)]
+                else:
                     antisense = antisense + antinucleotides[1]
             elif templateN == 'C':
                 if randint(0,1000) <= errorpercent:
+                    antisense = antisense + antinucleotides[randint(0,3)]
+                else:
                     antisense = antisense + antinucleotides[2]
             else:
                 if randint(0,1000) <= errorpercent:
+                    antisense = antisense + antinucleotides[randint(0,3)]
+                else:
                     antisense = antisense + antinucleotides[3]
         readsfile.write(">Read{}[{}:{}]\n{}\n\n".format(counter,start,finish,antisense))
         counter += 1
