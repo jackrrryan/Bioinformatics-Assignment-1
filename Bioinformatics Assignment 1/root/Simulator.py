@@ -12,26 +12,26 @@ def readsequence(template, antinucleotides, nucleotides, errors, start, finish):
 
     for i in range (start, finish):
         templateN = template[i:i+1]
-        randomerror = randint(0,1000)   #from reference. Error rate determined to be 99.5%
+        randomerror = randint(0,1000)   #from reference. Error rate determined to be 99.9%
         if errors == True:
             randomerror = 1000
         if templateN == 'A':
-            if randomerror < 5:     #5/1000 = 0.5%
+            if randomerror < 1:     #1/1000 = 0.1%
                 antisense = antisense + antinucleotides[randint(0,3)]
             else:
                 antisense = antisense + antinucleotides[0]
         elif templateN == 'T':
-            if randomerror < 5:
+            if randomerror < 1:
                 antisense = antisense + nucleotides[randint(0,3)]
             else:
                 antisense = antisense + antinucleotides[1]
         elif templateN == 'C':
-            if randomerror < 5:
+            if randomerror < 1:
                 antisense = antisense + nucleotides[randint(0,3)]
             else:
                 antisense = antisense + antinucleotides[2]
         else:
-            if randomerror < 5:
+            if randomerror < 1:
                 antisense = antisense + nucleotides[randint(0,3)]
             else:
                 antisense = antisense + antinucleotides[3]
@@ -46,7 +46,6 @@ preamble = template[0:72]
 print(preamble)
 
 template = template[73:]
-print(template[:1000])
 
 print("Welcome to the Genome Sequencer 5000!\nThis sequencer uses Pyrosequencing.")
 
