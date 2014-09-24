@@ -47,7 +47,7 @@ print(preamble)
 
 template = template[73:]
 
-print("Welcome to the Genome Sequencer 5000!Hello")
+print("Welcome to the Genome Sequencer 5000!")
 
 e = ''
 errors = False
