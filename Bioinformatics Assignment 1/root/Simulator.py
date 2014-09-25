@@ -14,6 +14,12 @@ nucleotides = ['A','T','C','G']
 antinucleotides = ['T','A','G','C']
 preamble = template[0:72]   #This is all the text before the start of the sequence
 template = template[73:]    #This is the actual sequence
+templateList = []   #this is a copy of the template string to be used in determining gaps in sequencing
+def makeTemplateList(template):
+    for i in range(0,len(template)):
+        templateList.append(template[i])
+
+makeTemplateList(template)
 
 def readSizePosition(sequenceType):
     if sequenceType == 1:
@@ -44,6 +50,7 @@ def sequence(sequenceType, readNum, template, preamble, antinucleotides, nucleot
         sfpositions = readSizePosition(int(sequenceType))
         start = sfpositions[0]    # this is the start position of this specific read
         finish = sfpositions[1]   # this is the end position of this specific read
+        templateList = findGaps(start, finish)
         for j in range(start,finish):
             templateN = template[j]
             if templateN == 'A':
@@ -59,6 +66,7 @@ def sequence(sequenceType, readNum, template, preamble, antinucleotides, nucleot
 
     readsfile.flush()
     readsfile.close()
+    return templateList
 
 def randsequence(sequenceType, readNum, template, preamble, antinucleotides, nucleotides):
     if sequenceType == 1:
@@ -78,6 +86,7 @@ def randsequence(sequenceType, readNum, template, preamble, antinucleotides, nuc
         sfpositions = readSizePosition(int(sequenceType))
         start = sfpositions[0]    # this is the start position of this specific read
         finish = sfpositions[1]   # this is the end position of this specific read
+        templateList = findGaps(start, finish)
         for j in range(start,finish):
             templateN = template[j]
             if templateN == 'A':
@@ -105,8 +114,12 @@ def randsequence(sequenceType, readNum, template, preamble, antinucleotides, nuc
 
     readsfile.flush()
     readsfile.close()
+    return templateList
 
-
+def findGaps(start, finish):
+    for i in range(start, finish):
+        templateList[i] = "X"
+    return templateList
 
 def askErrors(sequenceType):
     e = ''
@@ -169,6 +182,25 @@ readNum = askCoverage(sequenceType)
 print('Sequencing has begun!')
 
 if errors == True:
-    randsequence(sequenceType, readNum, template, preamble, antinucleotides, nucleotides)
+    templateList = randsequence(sequenceType, readNum, template, preamble, antinucleotides, nucleotides)
 else:
-    sequence(sequenceType, readNum, template, preamble, antinucleotides, nucleotides)
+    templateList = sequence(sequenceType, readNum, template, preamble, antinucleotides, nucleotides)
+
+starts = []
+ends = []
+sequence_start = None
+for i, letter in enumerate(templateList):
+    if letter is "X" and sequence_start is None:
+        sequence_start = i
+    elif letter is not "X" and sequence_start is not None:
+        starts.append(sequence_start)
+        ends.append(i-1)
+        sequence_start = None
+if sequence_start is not None: # string ended with an X
+    starts.append(sequence_start)
+    ends.append(len(sequence)-1)
+
+
+print(starts)
+print(ends)
+
